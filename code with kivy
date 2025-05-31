@@ -3,28 +3,75 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 from kivy.uix.screenmanager import ScreenManager,Screen
+from kivy.uix.scrollview import ScrollView
+
+class ScrButton(Button):
+    def __init__(self, screen, direction = 'right', goal = 'main', **kwargs):
+        super().__init__(**kwargs)
+        self.screen = screen
+        self.direction = direction
+        self.goal = goal
+    def on_press(self):
+        self.screen.manager.transiton.direction = self.direction
+        self.screen.manager.current = self.goal
+
+class Mainscr(Screen):
+    def __init__(self,name):
+        super().__init__(name = name)
+        v1 = BoxLayout(orientation = 'vertical', padding = 8, spacing = 8)
+        h1 = BoxLayout()
+        txt = Label(text = 'Chose a screen')
+        v1.add_widget(ScrButton(self,direction='down',goal='first',text='1'))
+        v1.add_widget(ScrButton(self,direction='left',goal='second',text='2'))
+        v1.add_widget(ScrButton(self,direction='up',goal='third',text='3'))
+        v1.add_widget(ScrButton(self,direction='right',goal='fourth',text='4'))
+        h1.add_widget(txt)
+        h1.add_widget(v1)
+        self.add_widget(h1)
 
 class FirstScr(Screen):
-    def __init__(self,name = 'first'):
-        super().__init__(name = name)
-        btn1 = Button(text = "Romanian")
-        btn1.on_press = self.next
-        self.add_widget(btn1)
-    def next(self):
-        self.manager.transition.direction = 'left'
-        self.manager.current = 'second'
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        v1 = BoxLayout(orientation='vertical',size_hint=(.5,.5),pos_hint={'center_x':0.5, 'center_y':0.5})
+        btn = Button(text='Choice : 1',size_hint=(.5,1),pos_hint={'left':0})
+        btn_back = ScrButton(self,direction='up',goal='main',text='back',size_hint=(.5,1), pos_hint={'right':1})
+        v1.add_widget(btn)
+        v1.add_widget(btn_back)
+        self.add_widget(v1)
 
 class SecondScr(Screen):
-    def __init__(self,name = 'second'):
-        super().__init__(name = name)
-        btn3 = Button(text = "French")
-        btn3.on_press = self.next
-        self.add_widget(btn3)
-    def next(self):
-        self.manager.transition.direction = 'right'
-        self.manager.current = 'first'
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        v1 = BoxLayout(orientation = 'vertical')
+        self.text = Label(text = 'Choice 2')
+        v1.add_widget(self.text)
 
+        hl_0 = BoxLayout(size_hint = (0.8,None), height = '30sp')
+        lbl1 = Label(text = "Enter password:", halign = 'right')
+        self.input = TextInput(multimine = False)
+        
+        hl_0.add_widget(lbl1)
+        hl_0.add_widget(self.input)
+        v1.add_widget(hl_0)
+
+        h1 = BoxLayout(size_hint = (0.5,0.2), pos_hint = ('center_x', 0.5))
+        btn_false = Button(text = 'ok')
+        btn_back = ScrButton(self, direction='right',goal = 'main', text = 'back')
+
+
+class FourthScr(Screen):
+    def __init__(self, name):
+        super().__init__(name=name)
+        layout = BoxLayout(orientation = 'vertical')
+        btn_back = ScrButton(self,direction='down',goal = 'main',text = 'back')
+        test_label = Label(text = 'your own screen')
+        layout.add_widget(test_label)
+        layout.add_widget(btn_back)
+        self.add_widget(layout)
+        
+        
 class MyApp(App):
     def build(self):
         sm = ScreenManager()
@@ -33,4 +80,5 @@ class MyApp(App):
         return sm
 
 
-MyApp().run()
+app = MyApp()
+app.run()
